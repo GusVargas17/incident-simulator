@@ -1,0 +1,30 @@
+# 🐍 Python bytecode and cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 🧪 Pytest and coverage files
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# ⚙️ Virtual environments
+.venv/
+env/
+venv/
+
+# 🔐 Environment variable files
+.env
+*.env
+
+# 📝 Log files
+*.log
+logs/
+
+# ⚠️ IDE/editor config files (like VSCode)
+.vscode/
+.idea/
+
+# 📦 Dependency lock files (if using pipenv or poetry)
+Pipfile.lock
+poetry.lock
