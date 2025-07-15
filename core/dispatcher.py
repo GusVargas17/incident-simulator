@@ -50,5 +50,5 @@ def assign_incident(incident_id: int, operator_name: str) -> Incident:
             incident.status = "in_progress"
             return incident
 
-# if the for ends without finding it
-raise ValueError("Incident not found")
+    # if the for ends without finding it
+    raise ValueError("Incident not found")
