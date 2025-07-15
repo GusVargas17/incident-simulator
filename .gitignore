@@ -28,3 +28,6 @@ logs/
 # 📦 Dependency lock files (if using pipenv or poetry)
 Pipfile.lock
 poetry.lock
+
+# 💻Development and test scripts
+manual_test.py
