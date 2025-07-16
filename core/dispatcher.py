@@ -14,6 +14,9 @@ _available_operators = {"Sofia", "Carlos", "Mariano"}
 # List of track resolved incidents (history)
 _resolved_incidents = []
 
+#List of escalated incidents
+_escalated_incidents = []
+
 def register_incident(type: str, priority: str, description: str) -> Incident:
     """
     Registers a new incident and adds it to the pending queue.
