@@ -32,5 +32,5 @@ poetry.lock
 # 💻Development and test scripts
 manual_test.py
 
-# 💾 Simulated database
+# 💾 Update .gitignore to exclude data and test files
 data/
