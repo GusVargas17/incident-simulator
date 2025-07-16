@@ -44,7 +44,7 @@ def escaled_if_needed(priority: str):
         time_limit = get_time_limit(incident.priority)
 
         #Calculate how many minutes have passed since the incident was created
-        minutes_passed = (datetime.now()) - incident.created_at.total_seconds() / 60
+        minutes_passed = (datetime.now() - incident.created_at).total_seconds() / 60
 
         # If time exceeded -> escalate
         if minutes_passed > time_limit:
