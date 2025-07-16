@@ -1,6 +1,9 @@
 from datetime import datetime
-from core.dispatcher import _pending_incidents, _escalated_incidents
+from core.dispatcher import _pending_incidents
 from incident.models import Incident
+
+#List of escalated incidents
+_escalated_incidents = []
 
 def get_time_limit(priority: str) -> int:
     """
