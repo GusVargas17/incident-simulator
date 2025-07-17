@@ -32,6 +32,7 @@ def dict_to_incident(data: dict) -> Incident:
     """
     return Incident(    
         id=data["id"],
+        type=data["type"],
         priority=data["priority"],
         description=data["description"],
         created_at=datetime.fromisoformat(data["created_at"]),
@@ -86,7 +87,7 @@ def save_escalated_incident(incident: Incident):
     """
     Saves a escalated incident to the corresponding file.
     """
-    save_incident(RESOLVED_PATH, incident)
+    save_incident(ESCALATED_PATH, incident)
 
 def load_escalated_incident() -> List[Incident]:
     """
