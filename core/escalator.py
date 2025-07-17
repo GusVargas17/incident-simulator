@@ -19,7 +19,7 @@ def get_time_limit(priority: str) -> int:
     # Dictionary of priority to maximum waiting time in minutes
     priority_limits = {
         "high": 2,
-        "medim": 5,
+        "medium": 5,
         "low": 7
     }
 
