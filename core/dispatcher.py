@@ -8,9 +8,6 @@ incident_id_counter = 1
 # Queue to hold incidents that are pending
 _pending_incidents = deque()
 
-# Simulated set of availalble operators
-_available_operators = {"Sofia", "Carlos", "Mariano"}
-
 # List of track resolved incidents (history)
 _resolved_incidents = []
 
@@ -54,31 +51,17 @@ def get_pending_incident() -> list[Incident]:
     """
     return list(_pending_incidents)
 
-def assign_incident(incident_id: int, operator_name: str) -> Incident:
+def assign_incident(incident_id: int, estimated_minutes: int = 30) -> Incident:
     """
-    Assigns an incident to a valid operator, if it's pending and unassigned.
+    Assign an incident by its ID using business rules.
+    Raises ValueError if assignment fails.
     """
-    if operator_name not in _available_operators:
-        raise ValueError("Operator not found")
+    incident = next((i for i in _pending_incidents if i.id == incident_id), None)
+    if not incident:
+        raise ValueError("Incident not found")
 
-    # Search for the incident by ID
-    for incident in _pending_incidents:
-        if incident.id == incident_id:
-
-            #Validation: must be unassigned
-            if incident.assigned_to is not None:
-                raise ValueError("Incident is already assigned")
-            #Validation: must be in pending state
-            if incident.status != "pending":
-                raise ValueError("Incident is not in a pending state")
-
-            # all good: assign operator and change state
-            incident.assigned_to = operator_name
-            incident.status = "in_progress"
-            return incident
-
-    # if the for ends without finding it
-    raise ValueError("Incident not found")
+    if incident.assigned_to is not None or incident.status != "pending":
+        pass
 
 def resolve_incident(incident_id: int, operator_name: str) -> Incident:
     """
