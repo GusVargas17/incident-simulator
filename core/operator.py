@@ -38,14 +38,14 @@ class Operator:
         self.assigned_incident.append(incident_id)
         self.available_at = datetime.now() + timedelta(minutes=estimated_minutes)
 
-        if len(self.assign_incident) >= self.max_incidents:
+        if len(self.assigned_incident) >= self.max_incidents:
             self.status = "busy"
 
     def remove_incident(self, incident_id: str) -> None:
         """
         Remove a resolved incident and update status
         """
-        if incident_id in self.assign_incident:
-            self.assign_incident.remove(incident_id)
-        if len(self.assign_incident) < self.max_incidents:
+        if incident_id in self.assigned_incident:
+            self.assigned_incident.remove(incident_id)
+        if len(self.assigned_incident) < self.max_incidents:
             self.status = "available"
