@@ -1,6 +1,7 @@
 from incident.models import Incident
 from rules.assignment_rules import assign_incident_to_operator
-from rules.validation import can_operator_resolve_incident
+from rules.validation import can_operator_resolve_incident, is_valid_role_to_resolve
+from core.operators import OPERATORS
 from collections import deque
 from datetime import datetime
 
@@ -90,6 +91,10 @@ def resolve_incident(incident_id: int, operator_name: str) -> Incident:
             # Validation: operator must have permission to resolve this type
             if not can_operator_resolve_incident(operator_name, incident):
                 raise ValueError("Operator lacks permission to resolve this incident type")
+            # Validate role
+            operator = OPERATORS.get(operator_name)
+            if not is_valid_role_to_resolve(operator.role, incident.type):
+                raise ValueError("Operator role is not allowed to resolve this type")
 
             # Update status and move to resolved history
             incident.status = "resolved"
