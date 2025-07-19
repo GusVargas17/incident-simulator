@@ -2,11 +2,10 @@ from incident.models import Incident
 from rules.assignment_rules import assign_incident_to_operator
 from rules.validation import can_operator_resolve_incident, is_valid_role_to_resolve
 from core.operators import OPERATORS
+from core.validator import is_valid_priority
+from core.id_generator import generate_incident_id
 from collections import deque
 from datetime import datetime
-
-# Internal ID counter to generate unique incidents IDs
-incident_id_counter = 1
 
 # Queue to hold incidents that are pending
 _pending_incidents = deque()
@@ -20,15 +19,13 @@ def register_incident(type: str, priority: str, description: str) -> Incident:
     Incidents with high priority are placed at the front of the queue.
     """
 
-    global incident_id_counter
-
     #Validate priority level
-    if priority.lower() not in ["low", "medium", "high"]:
+    if not is_valid_priority(priority):
         raise ValueError("Priority not accepted")
 
     # Created a new incident object
     incident = Incident(
-        id=incident_id_counter,
+        id=generate_incident_id(),
         type=type,
         priority=priority.lower(),
         description=description,
@@ -42,9 +39,6 @@ def register_incident(type: str, priority: str, description: str) -> Incident:
         _pending_incidents.appendleft(incident)
     else:
         _pending_incidents.append(incident)
-
-    # Increment ID counter for the next incident
-    incident_id_counter += 1
 
     return incident
 
@@ -104,3 +98,6 @@ def resolve_incident(incident_id: int, operator_name: str) -> Incident:
 
     # If no incident matched the ID
     raise ValueError("Incident not found")
+
+def get_resolved_incidents() -> list[Incident]:
+    return _resolved_incidents
