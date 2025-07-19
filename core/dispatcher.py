@@ -66,6 +66,22 @@ def assign_incident(incident_id: int, estimated_minutes: int = 30) -> Incident:
 
     return incident
 
+def start_incident(incident_id: int, operator_name: str) -> Incident:
+    """
+    Moves an incident to 'in_progress' status if assigned and valid.
+    """
+    for incident in _pending_incidents:
+        if incident.id == incident_id:
+            if incident.assigned_to != operator_name:
+                raise ValueError("Incident not assigned to this operator")
+            if incident.status != "pending":
+                raise ValueError("Only pending incidents can be started")
+
+            incident.status = "in_progress"
+            return incident
+
+    raise ValueError("Incident not found")
+
 def resolve_incident(incident_id: int, operator_name: str) -> Incident:
     """
     Resolves an assigned incident, if it is in progress and handled by the right operator.
