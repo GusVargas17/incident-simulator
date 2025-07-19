@@ -35,7 +35,7 @@ class Operator:
             - Updates availability time.
             - Updates status if max is reached.
         """
-        self.assign_incident.append(incident_id)
+        self.assigned_incident.append(incident_id)
         self.available_at = datetime.now() + timedelta(minutes=estimated_minutes)
 
         if len(self.assign_incident) >= self.max_incidents:

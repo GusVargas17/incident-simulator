@@ -1,6 +1,7 @@
 from datetime import datetime
 from core.dispatcher import _pending_incidents
 from incident.models import Incident
+from rules.escalation_rules import should_escalate_incident, escalate_incident
 
 #List of escalated incidents
 _escalated_incidents = []
@@ -24,18 +25,16 @@ def get_time_limit(priority: str) -> int:
     }
 
     if priority not in priority_limits:
-        raise ValueError
+        raise ValueError(f"Unknown priority: {priority}")
 
     return priority_limits[priority]
 
 def escaled_if_needed(priority: str):
     """
-    Increases unassigned incidents if they have exceeded your time limit
-    depending on your priority. Intensified incidents are removed from the tracks
-    queue and added to a separate scaled list.
+    Escalates unassigned incidents that exceeded their allowed waiting time.
+    Moves them from _pending_incidents to _escalated_incidents.
     """
 
-    # We will temporarily store escalated incidents for secure disposal later.
     to_escalate = []
 
     for incident in _pending_incidents:
@@ -43,14 +42,13 @@ def escaled_if_needed(priority: str):
         if incident.assigned_to is not None:
             continue
 
-        # Get time limit in minutes for this incident's priority
-        time_limit = get_time_limit(incident.priority)
+        try:
+            limit = get_time_limit(incident.priority)
+        except ValueError:
+            continue   # Skip unknown priorities
 
-        #Calculate how many minutes have passed since the incident was created
-        minutes_passed = (datetime.now() - incident.created_at).total_seconds() / 60
-
-        # If time exceeded -> escalate
-        if minutes_passed > time_limit:
+        if should_escalate_incident(incident, limit):
+            escalate_incident(incident)
             incident.status = "escalated"
             to_escalate.append(incident)
 

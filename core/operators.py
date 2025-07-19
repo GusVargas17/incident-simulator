@@ -1,7 +1,7 @@
 from core.operator import Operator
 from typing import Dict
 
-OPERATORS = Dict[str, Operator] = {
+OPERATORS: Dict[str, Operator] = {
     "Alice": Operator(
         name="Alice",
         role="support_level_1",

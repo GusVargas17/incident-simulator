@@ -1,4 +1,6 @@
 from incident.models import Incident
+from rules.assignment_rules import assign_incident_to_operator
+from rules.validation import can_operator_resolve_incident
 from collections import deque
 from datetime import datetime
 
@@ -61,7 +63,13 @@ def assign_incident(incident_id: int, estimated_minutes: int = 30) -> Incident:
         raise ValueError("Incident not found")
 
     if incident.assigned_to is not None or incident.status != "pending":
-        pass
+        raise ValueError("Incident is not available for assignment")
+
+    success = assign_incident_to_operator(incident, estimated_minutes)
+    if not success:
+        raise ValueError("No available operator could handle this incident")
+
+    return incident
 
 def resolve_incident(incident_id: int, operator_name: str) -> Incident:
     """
@@ -79,6 +87,9 @@ def resolve_incident(incident_id: int, operator_name: str) -> Incident:
             # Validation: only incidents in progress can be resolved
             if incident.status != "in_progress":
                 raise ValueError("Incident cannot be resolved in its current state")
+            # Validation: operator must have permission to resolve this type
+            if not can_operator_resolve_incident(operator_name, incident):
+                raise ValueError("Operator lacks permission to resolve this incident type")
 
             # Update status and move to resolved history
             incident.status = "resolved"
