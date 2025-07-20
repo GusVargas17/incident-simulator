@@ -1,0 +1,111 @@
+from core.dispatcher import (
+    register_incident,
+    get_pending_incident,
+    assign_incident,
+    start_incident,
+    resolve_incident,
+    get_resolved_incidents
+)
+from core.operators import OPERATORS
+
+def main_menu():
+    while True:
+        print("\n=== INCIDENT MANAGER ===")
+        print("1. Register Incident")
+        print("2. View Pending Incidents")
+        print("3. Assign Incident")
+        print("4. Start Incident")
+        print("5. Resolve Incident")
+        print("6. View Resolved Incidents")
+        print("7. Exit")
+
+        choice = input("Choose an option (1-7): ")
+
+        try:
+            if choice == "1":
+                handle_register()
+                pause()
+            elif choice == "2":
+                handle_view_pending()
+                pause()
+            elif choice == "3":
+                handle_assign()
+                pause()
+            elif choice == "4":
+                handle_start()
+                pause()
+            elif choice == "5":
+                handle_resolve()
+                pause()
+            elif choice == "6":
+                handle_view_resolved()
+                pause()
+            elif choice == "7":
+                print("Exiting...")
+                break
+            else:
+                print("Invalid option. Try again.")
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+def handle_register():
+    print("\n--- Register INcident ---")
+    type_ = input("Incident type (network/software/hardware/ux/security): ")
+    priority = input("Priority (low/medium/high): ").strip().lower()
+    description = input("Description: ").strip()
+
+    incident = register_incident(type_, priority, description)
+    print(f"✅ Incident registered with ID: {incident.id}")
+
+def handle_view_pending():
+    print("\n--- Pending Incidents ---")
+    pending = get_pending_incident
+    if not pending:
+        print("No pending incidents")
+    else:
+        for i in pending:
+            print(f"ID: {i.id} | Type: {i.type} | Priority: {i.priority} | Status: {i.status} | Assigned to: {i.assigned_to}")
+
+def handle_assign():
+    print("\n--- Assign Incident ---")
+    try:
+        incident_id = int(input("Incident ID to assign: "))
+        assign_incident(incident_id)
+        print("✅ Incident assigned.")
+    except ValueError as m:
+        print(f"Error: {m}")
+
+def handle_start():
+    print("\n--- Start Incident ---")
+    try:
+        incident_id = int(input("Incident ID to start: "))
+        operator_name = input("Operator name: ").strip()
+
+        start_incident(incident_id, operator_name)
+        print("✅ Incident started.")
+    except ValueError as m:
+        print(f"Error: {m}")
+
+def handle_resolve():
+    print("\n--- Resolve Incident ---")
+    try:
+        incident_id = int(input("Incident ID to resolve: "))
+        operator_name = input("Operator name: ").strip()
+
+        resolve_incident(incident_id, operator_name)
+        print("✅ Incident resolved.")
+    except ValueError as m:
+        print(f"Error: {m}")
+
+def handle_view_resolved():
+    print("\n--- Resolved Incidents ---")
+    resolved = get_resolved_incidents()
+    if not resolved:
+        print("No resolved incidents.")
+    else:
+        for i in resolved:
+            print(f"ID: {i.id} | Resolved by: {i.assigned_to} | Status: {i.status}")
+
+def pause():
+    input("\nPress ENTER to continue..")
