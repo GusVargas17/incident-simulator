@@ -2,7 +2,12 @@ from incident.models import Incident
 from rules.assignment_rules import assign_incident_to_operator
 from rules.validation import can_operator_resolve_incident, is_valid_role_to_resolve
 from core.operators import OPERATORS
-from core.validator import is_valid_priority
+from core.validator import (
+    is_valid_priority,
+    is_valid_incident_type,
+    is_valid_incident_id_format,
+    is_unique_incident_id
+)
 from core.id_generator import generate_incident_id
 from persistence.storage import (
     save_escalated_incident, load_escalated_incident,
@@ -19,6 +24,7 @@ _resolved_incidents = load_resolved_incident()
 
 # List of track escalated incidents
 _escalated_incidents = load_escalated_incident()
+
 # -------------------- #
 # DISPATCHER FUNCTIONS #
 # -------------------- #
@@ -28,10 +34,20 @@ def register_incident(type: str, priority: str, description: str) -> Incident:
     Registers a new incident and adds it to the pending queue.
     Incidents with high priority are placed at the front of the queue.
     """
+    #Validate type of incidente
+    if not is_valid_incident_type(type):
+        raise ValueError(f"Invalid incident type: {type}")
 
     #Validate priority level
     if not is_valid_priority(priority):
-        raise ValueError("Priority not accepted")
+        raise ValueError(f"Invalid priority level: {priority}")
+
+    # Generate ID and validate
+    incident_id = generate_incident_id()
+    if not is_valid_incident_id_format(incident_id):
+        raise ValueError(f"Invalid incident ID format: {incident_id}")
+    if not is_unique_incident_id(incident_id, list(_pending_incidents) + _resolved_incidents + _escalated_incidents):
+        raise ValueError(f"Duplicate incident ID: {incident_id}")
 
     # Created a new incident object
     incident = Incident(

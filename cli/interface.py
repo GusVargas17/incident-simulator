@@ -108,7 +108,7 @@ def main_menu():
         print("8. View Escalated Incidents")
         print("9. Exit")
 
-        choice = input("Choose an option (1-8): ")
+        choice = input("Choose an option (1-9): ")
 
         try:
             if choice == "1":
