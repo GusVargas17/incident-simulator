@@ -49,7 +49,7 @@ def load_incident(file_path: str) -> List[Incident]:
     Upload incidents from a JSON file. 
     If the file does not exist, it returns an empty list.
     """
-    if not os.path.exists(file_path):
+    if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
         return []
 
     with open(file_path, "r", encoding="utf-8") as f:

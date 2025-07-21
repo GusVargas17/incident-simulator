@@ -29,8 +29,12 @@ logs/
 Pipfile.lock
 poetry.lock
 
-# 💻Development and test scripts
+# 💻 Development and test scripts
 manual_test.py
 
 # 💾 Update .gitignore to exclude data and test files
 data/
+
+# ✅Except these empty files (keep them tracked)
+!/data/escalated_incidents.json
+!/data/resolved_incidents.json

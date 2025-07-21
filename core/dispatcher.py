@@ -4,6 +4,10 @@ from rules.validation import can_operator_resolve_incident, is_valid_role_to_res
 from core.operators import OPERATORS
 from core.validator import is_valid_priority
 from core.id_generator import generate_incident_id
+from persistence.storage import (
+    save_escalated_incident, load_escalated_incident,
+    save_resolved_incident, load_resolved_incident
+)
 from collections import deque
 from datetime import datetime
 
@@ -11,7 +15,13 @@ from datetime import datetime
 _pending_incidents = deque()
 
 # List of track resolved incidents (history)
-_resolved_incidents = []
+_resolved_incidents = load_resolved_incident()
+
+# List of track escalated incidents
+_escalated_incidents = load_escalated_incident()
+# -------------------- #
+# DISPATCHER FUNCTIONS #
+# -------------------- #
 
 def register_incident(type: str, priority: str, description: str) -> Incident:
     """
@@ -48,7 +58,7 @@ def get_pending_incident() -> list[Incident]:
     """
     return list(_pending_incidents)
 
-def assign_incident(incident_id: int, estimated_minutes: int = 30) -> Incident:
+def assign_incident(incident_id: str, estimated_minutes: int = 30) -> Incident:
     """
     Assign an incident by its ID using business rules.
     Raises ValueError if assignment fails.
@@ -66,7 +76,7 @@ def assign_incident(incident_id: int, estimated_minutes: int = 30) -> Incident:
 
     return incident
 
-def start_incident(incident_id: int, operator_name: str) -> Incident:
+def start_incident(incident_id: str, operator_name: str) -> Incident:
     """
     Moves an incident to 'in_progress' status if assigned and valid.
     """
@@ -82,7 +92,7 @@ def start_incident(incident_id: int, operator_name: str) -> Incident:
 
     raise ValueError("Incident not found")
 
-def resolve_incident(incident_id: int, operator_name: str) -> Incident:
+def resolve_incident(incident_id: str, operator_name: str) -> Incident:
     """
     Resolves an assigned incident, if it is in progress and handled by the right operator.
     """
@@ -115,5 +125,30 @@ def resolve_incident(incident_id: int, operator_name: str) -> Incident:
     # If no incident matched the ID
     raise ValueError("Incident not found")
 
+def escalate_incident(incident_id: str, reason: str) -> Incident:
+    """
+    Escalates an incident that could not be resolved.
+    """
+    for incident in _pending_incidents:
+        if incident.id == incident_id:
+            incident.status = "escalated"
+            _pending_incidents.remove(incident)
+            _escalated_incidents.append(incident)
+            save_escalated_incident(incident)
+            return incident
+
+    # If no incident matched the ID
+    raise ValueError("Incident not found")
+
 def get_resolved_incidents() -> list[Incident]:
+    """
+    Returns all resolved incidents.
+    """
     return _resolved_incidents
+
+
+def get_escalated_incidents() -> list[Incident]:
+    """
+    Returns all escalated incidents.
+    """
+    return _escalated_incidents
