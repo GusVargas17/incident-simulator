@@ -11,7 +11,7 @@ from core.dispatcher import (
 from core.operators import OPERATORS
 
 def handle_register():
-    print("\n--- Register INcident ---")
+    print("\n--- Register Incident ---")
     type_ = input("Incident type (network/software/hardware/ux/security): ")
     priority = input("Priority (low/medium/high): ").strip().lower()
     description = input("Description: ").strip()
