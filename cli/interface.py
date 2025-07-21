@@ -4,6 +4,7 @@ from core.dispatcher import (
     assign_incident,
     start_incident,
     resolve_incident,
+    escalate_incident,
     get_resolved_incidents,
     get_escalated_incidents
 )
@@ -58,6 +59,21 @@ def handle_resolve():
     except ValueError as m:
         print(f"Error: {m}")
 
+def handle_escalate():
+    print("\n--- Escalate Incident ---")
+    try:
+        incident_id = input("Incident ID to escalate: ").strip()
+        reason = input("Reason for escalation: ").strip()
+
+        if not reason:
+            print("❌ Escalation reason is required.")
+            return
+
+        escalate_incident(incident_id, reason)
+        print("✅ Incident escalated.")
+    except ValueError as m:
+        print(f"Error: {m}")
+
 def handle_view_resolved():
     print("\n--- Resolved Incidents ---")
     resolved = get_resolved_incidents()
@@ -87,9 +103,10 @@ def main_menu():
         print("3. Assign Incident")
         print("4. Start Incident")
         print("5. Resolve Incident")
-        print("6. View Resolved Incidents")
-        print("7. View Escalated Incidents")
-        print("8. Exit")
+        print("6. Escalate Incident")
+        print("7. View Resolved Incidents")
+        print("8. View Escalated Incidents")
+        print("9. Exit")
 
         choice = input("Choose an option (1-8): ")
 
@@ -110,12 +127,15 @@ def main_menu():
                 handle_resolve()
                 pause()
             elif choice == "6":
-                handle_view_resolved()
+                handle_escalate()
                 pause()
             elif choice == "7":
-                handle_view_escalated()
+                handle_view_resolved()
                 pause()
             elif choice == "8":
+                handle_view_escalated()
+                pause()
+            elif choice == "9":
                 print("Exiting...")
                 break
             else:

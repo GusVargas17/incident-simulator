@@ -120,6 +120,7 @@ def resolve_incident(incident_id: str, operator_name: str) -> Incident:
             incident.status = "resolved"
             _pending_incidents.remove(incident)
             _resolved_incidents.append(incident)
+            save_resolved_incident(incident)
             return incident
 
     # If no incident matched the ID
